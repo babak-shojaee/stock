@@ -46,7 +46,7 @@ public class StockControllerTest {
     private SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD hh:mm:ss");
 
     @Test
-    public void findAll_ReturnsStockList() throws Exception {
+    public void findStockList() throws Exception {
 
 
         Mockito.when(service.findAll()).thenReturn(

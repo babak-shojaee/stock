@@ -1,0 +1,16 @@
+version: '3'
+services:
+
+  stock:
+    image: stock
+    container_name: stock
+    ports:
+      - "8080:8080"
+
+  stock-ui:
+    image: stock-ui
+    container_name: stock-ui
+    ports:
+      - "5000:5000"
+    depends_on:
+      - stock

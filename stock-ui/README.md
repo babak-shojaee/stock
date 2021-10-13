@@ -13,5 +13,8 @@ $ npm i || npm install
 $ npm run dev
 
 # build for production
-$ npm build
-```
+$ npm run build
+
+#for docker build
+docker build -t stock-ui:latest .
+

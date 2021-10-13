@@ -18,7 +18,6 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 
 @ControllerAdvice
-@Order(Ordered.HIGHEST_PRECEDENCE)
 @Slf4j
 public class ControllersAdvice  extends ResponseEntityExceptionHandler {
 
