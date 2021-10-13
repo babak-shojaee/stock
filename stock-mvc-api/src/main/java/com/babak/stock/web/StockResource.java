@@ -19,7 +19,7 @@ import java.util.List;
 @RequestMapping("/api/stocks")
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "${stock.cross.origin}")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class StockResource {
 
     private final StockService stockService;
@@ -32,10 +32,9 @@ public class StockResource {
 
     @GetMapping("/{id}")
     public ResponseEntity<Stock> findById(@Valid @PathVariable(value = "id") Long stockId) throws StockNotFoundException {
+        log.info("finding  stock  with id : " + stockId);
 
         Stock stock = stockService.findById(stockId);
-
-        log.info("stocks  found  with id : " + stock.getId());
 
         return ResponseEntity.ok().body(stock);
     }
@@ -53,7 +52,7 @@ public class StockResource {
 
     @PostMapping("/")
     public ResponseEntity<Stock> createStock(@Valid @RequestBody Stock stock) throws URISyntaxException {
-
+        log.info("creating  the stock : " + stock);
 
         Stock result = stockService.createStock(stock);
 

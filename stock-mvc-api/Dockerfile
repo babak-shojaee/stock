@@ -1,3 +1,5 @@
-FROM ghcr.io/graalvm/graalvm-ce:21.2.0
-
-COPY target/stock-0.0.1-SNAPSHOT.jar /opt
+FROM adoptopenjdk/openjdk11:alpine-jre
+VOLUME /tmp
+WORKDIR /opt
+COPY target/*.jar /opt/stock.jar
+ENTRYPOINT ["java","-jar","/opt/stock.jar"]
