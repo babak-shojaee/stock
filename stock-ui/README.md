@@ -15,6 +15,6 @@ $ npm run dev
 # build for production
 $ npm run build
 
-#for docker build
+# For docker build
 docker build -t stock-ui:latest .
 
