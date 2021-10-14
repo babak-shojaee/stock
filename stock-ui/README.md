@@ -1,9 +1,6 @@
 
 
-## Build Setup
-git clone https://github.com/babak-shojaee/stock.git
-
-# open app directory
+# open stock-ui directory
 $ cd stock-ui
 
 # install dependencies

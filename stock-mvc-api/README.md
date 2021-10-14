@@ -1,6 +1,4 @@
 
-
-
 # open stock-mvc-api directory
 $ cd stock/stock-mvc-api
 

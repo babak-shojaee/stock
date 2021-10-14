@@ -45,11 +45,7 @@ docker build -t stock  .
 $ mvn spring-boot run
 
 ## Usage stock ui
-
-## Build Setup
-git clone https://github.com/babak-shojaee/stock.git
-
-# open app directory
+# open stock-ui directory
 $ cd stock-ui
 
 # install dependencies
@@ -86,15 +82,6 @@ http://localhost:8080/swagger-ui.html
 ## Roadmap
 
 - [] Reactive api
-
-
-<!-- LICENSE -->
-## License
-
-Distributed under the MIT License. See `LICENSE.txt` for more information.
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
 
 
 <!-- CONTACT -->
