@@ -62,6 +62,7 @@ $ npm run dev
 
 # how to run 
 Locate to root of project then (where docker-compose.yml)
+
 docker-compose up
 
 # how to access 
