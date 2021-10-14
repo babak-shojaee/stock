@@ -60,7 +60,7 @@ docker build -t stock-ui:latest .
 # serve with hot reload at localhost
 $ npm run dev
 
-#how to run 
+# how to run 
 Locate to root of project then (where docker-compose.yml)
 docker-compose up
 
