@@ -33,6 +33,7 @@ public class Stock  {
     @NotEmpty
     private  String name;
 
+    @NotNull
     @DecimalMin(value = "0.1", inclusive = false)
     private  Double currentPrice;
 
