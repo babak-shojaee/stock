@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk11:alpine-jre
+FROM adoptopenjdk/openjdk25:alpine-jre
 VOLUME /tmp
 WORKDIR /opt
 COPY target/*.jar /opt/stock.jar

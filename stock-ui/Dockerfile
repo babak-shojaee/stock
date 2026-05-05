@@ -1,15 +1,20 @@
-FROM node:lts
+FROM node:18-alpine AS build
 
 WORKDIR /app
 
-ENV PATH /app/node_modules/.bin:$PATH
+# Install dependencies
+COPY package.json package-lock.json* ./
+RUN npm ci --silent || npm install --silent
 
-COPY . /app/
+# Copy source and build
+COPY . .
+RUN npm run build
 
-RUN npm install
+# Production image
+FROM nginx:stable-alpine
 
-# copy production folder  to  app folder
-COPY build /app
+COPY --from=build /app/build /usr/share/nginx/html
 
-# start node
-CMD serve -s build
+# Expose port and run nginx
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

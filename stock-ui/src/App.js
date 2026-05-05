@@ -17,7 +17,7 @@ import CreateStock from "./components/CreateStock";
 import UpdateStock from "./components/UpdateStock";
 import Modal from "./components/Modal";
 import Loader from "./components/Loader";
-import MySwal from "./index";
+import MySwal from "./utils/swal";
 
 function App() {
   const dispatch = useDispatch();

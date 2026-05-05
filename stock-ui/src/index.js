@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { createStore } from "redux";
 import { Provider } from "react-redux";
 import { composeWithDevTools } from "redux-devtools-extension";
@@ -12,15 +12,18 @@ import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 
 const MySwal = withReactContent(Swal);
-export default MySwal;
+// If apps need MySwal, import from a dedicated module; avoid exporting from entrypoint.
 
 const store = createStore(rootReducer, composeWithDevTools());
 
-ReactDOM.render(
+const root = createRoot(document.getElementById("root"));
+root.render(
   <Provider store={store}>
     <App />
-  </Provider>,
-  document.getElementById("root")
+  </Provider>
 );
 
 serviceWorker.unregister();
+
+// Export MySwal for use in the app (keeps compatibility with existing imports)
+export default MySwal;
