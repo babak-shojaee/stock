@@ -1,9 +1,9 @@
 package com.babak.stock.config;
 
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.babak.stock.model.Stock;
 import com.babak.stock.repository.StockRepository;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
