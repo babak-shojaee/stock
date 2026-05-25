@@ -3,65 +3,53 @@ package com.babak.stock.web;
 import com.babak.stock.exception.StockNotFoundException;
 import com.babak.stock.model.Stock;
 import com.babak.stock.service.StockService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
-import java.net.URISyntaxException;
 import java.util.List;
 
-@Slf4j
-@RequestMapping("/api/stocks")
 @RestController
-@RequiredArgsConstructor
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@RequestMapping("/api/stocks")
+@CrossOrigin(origins = "${app.cors.allowed-origins}", allowedHeaders = "*")
 public class StockResource {
+
+    private static final Logger log = LoggerFactory.getLogger(StockResource.class);
 
     private final StockService stockService;
 
+    public StockResource(StockService stockService) {
+        this.stockService = stockService;
+    }
+
     @GetMapping({"", "/"})
-    public List<Stock> findAll() {
-        return stockService.findAll();
+    public ResponseEntity<List<Stock>> findAll() {
+        return ResponseEntity.ok(stockService.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Stock> findById(@PathVariable(value = "id") Long stockId) throws StockNotFoundException {
-        log.info("Finding stock with id: {}", stockId);
-
-        Stock stock = stockService.findById(stockId);
-
-        return ResponseEntity.ok().body(stock);
+    public ResponseEntity<Stock> findById(@PathVariable Long id) throws StockNotFoundException {
+        log.info("Finding stock with id: {}", id);
+        return ResponseEntity.ok(stockService.findById(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Stock> updateStock(@PathVariable(value = "id") Long stockId,
+    public ResponseEntity<Stock> updateStock(@PathVariable Long id,
                                              @Valid @RequestBody Stock stock) throws StockNotFoundException {
-
-        Stock updated = stockService.updateStock(stockId, stock);
-
+        Stock updated = stockService.updateStock(id, stock);
         log.info("Stock updated with id: {}", updated.getId());
-
-        return ResponseEntity.ok().body(updated);
+        return ResponseEntity.ok(updated);
     }
 
     @PostMapping({"", "/"})
     public ResponseEntity<Stock> createStock(@Valid @RequestBody Stock stock) {
-        log.info("Creating stock: {}", stock);
-
         Stock result = stockService.createStock(stock);
-
-        log.info("Stock saved with id: {}", result.getId());
-
+        log.info("Stock created with id: {}", result.getId());
         var location = org.springframework.web.servlet.support.ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(result.getId())
-                .toUri();
-
+                .fromCurrentRequest().path("/{id}").buildAndExpand(result.getId()).toUri();
         return ResponseEntity.created(location).body(result);
     }
-
-
 }

@@ -2,86 +2,65 @@ package com.babak.stock.web;
 
 import com.babak.stock.exception.StockNotFoundException;
 import com.babak.stock.web.model.ErrorResponse;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpStatus;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.validation.BindException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.util.Date;
-import java.util.Optional;
-import java.util.function.BiConsumer;
+import java.time.Instant;
 
 @ControllerAdvice
-@Slf4j
-public class ControllersAdvice  extends ResponseEntityExceptionHandler {
+@ResponseBody
+public class ControllersAdvice extends ResponseEntityExceptionHandler {
 
-
-    private static final BiConsumer<Exception, ErrorResponse> ERROR_LOGGER = (originalException, errorResponse) ->
-            log.error(errorResponse.toString(), originalException);
-
-    private static final BiConsumer<Exception, ErrorResponse> WARN_LOGGER = (originalException, errorResponse) ->
-            log.error(errorResponse.toString(), originalException);
-
+    private static final Logger log = LoggerFactory.getLogger(ControllersAdvice.class);
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(value = MethodArgumentTypeMismatchException.class)
-    public @ResponseBody
-    ErrorResponse handleMethodArgumentTypeMismatchException(HttpServletRequest request,
-                                                            MethodArgumentTypeMismatchException ex) {
-        final var message = ex.getMostSpecificCause() != null ? ex.getMostSpecificCause().getMessage() : ex.getMessage();
-        return createErrorResponse(request, ex, HttpStatus.BAD_REQUEST, message, "INV-INP", ERROR_LOGGER);
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ErrorResponse handleMethodArgumentTypeMismatch(HttpServletRequest request,
+                                                          MethodArgumentTypeMismatchException ex) {
+        String message = ex.getMostSpecificCause() != null ? ex.getMostSpecificCause().getMessage() : ex.getMessage();
+        return build(request, ex, HttpStatus.BAD_REQUEST, message, "INV-INP");
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(value = IllegalArgumentException.class)
-    public @ResponseBody
-    ErrorResponse handleIllegalArgumentException(HttpServletRequest request,
-                                                 IllegalArgumentException ex) {
-        return createErrorResponse(request, ex, HttpStatus.BAD_REQUEST, ex.getMessage(), "INV-INP", ERROR_LOGGER);
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ErrorResponse handleIllegalArgument(HttpServletRequest request, IllegalArgumentException ex) {
+        return build(request, ex, HttpStatus.BAD_REQUEST, ex.getMessage(), "INV-INP");
     }
-
-
-
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(value = Exception.class)
-    public @ResponseBody
-    ErrorResponse handleUnexpectedException(HttpServletRequest request, Exception ex) {
-        return createErrorResponse(request, ex, HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), "INT-ERR", ERROR_LOGGER);
-    }
-
-
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(value = StockNotFoundException.class)
-    public @ResponseBody
-    ErrorResponse stockNotFound(HttpServletRequest request, StockNotFoundException ex) {
-        return createErrorResponse(request, ex, HttpStatus.NOT_FOUND, ex.getMessage(), "INV-ID", ERROR_LOGGER);
+    @ExceptionHandler(StockNotFoundException.class)
+    public ErrorResponse handleStockNotFound(HttpServletRequest request, StockNotFoundException ex) {
+        return build(request, ex, HttpStatus.NOT_FOUND, ex.getMessage(), "INV-ID");
     }
 
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(Exception.class)
+    public ErrorResponse handleUnexpected(HttpServletRequest request, Exception ex) {
+        log.error("Unexpected error", ex);
+        return build(request, ex, HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), "INT-ERR");
+    }
 
-    private ErrorResponse  createErrorResponse(HttpServletRequest request,
-                                               Exception ex,
-                                               HttpStatus httpStatus,
-                                               String message,
-                                               String errorCode,
-                                               BiConsumer<Exception, ErrorResponse> loggerConsumer) {
-
-        final var errorResponse = ErrorResponse.builder()
-                .timestamp(new Date())
-                .status(httpStatus.value())
-                .error(httpStatus.getReasonPhrase())
-                .code(errorCode)
+    private ErrorResponse build(HttpServletRequest request, Exception ex, HttpStatus status, String message, String code) {
+        String path = request.getRequestURI() +
+                (request.getQueryString() != null ? "?" + request.getQueryString() : "");
+        ErrorResponse response = ErrorResponse.builder()
+                .timestamp(Instant.now())
+                .status(status.value())
+                .error(status.getReasonPhrase())
+                .code(code)
                 .exception(ex.getClass().getSimpleName())
                 .message(message)
-                .path(request.getRequestURI() + (request.getQueryString() != null ? "?" + request.getQueryString() : ""))
+                .path(path)
                 .build();
-
-        loggerConsumer.accept(ex, errorResponse);
-        return errorResponse;
+        log.error("{}", response, ex);
+        return response;
     }
 }

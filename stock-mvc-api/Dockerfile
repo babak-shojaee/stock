@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk25:alpine-jre
+FROM eclipse-temurin:21-jre-alpine
 VOLUME /tmp
 WORKDIR /opt
 COPY target/*.jar /opt/stock.jar
