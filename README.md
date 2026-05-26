@@ -1,103 +1,118 @@
+# 📈 Stock Management App
 
+A full-stack CRUD application for managing stock portfolios, built with **Spring Boot 3** and **React 18**.
 
-[LinkedIn] https://www.linkedin.com/in/babak-shojaee
+![screenshot](images/stock-scrrenshot.png)
 
+---
 
-# About Stock Application
-The goal of the application is to create simple crud on the stock entity with separate API and user interface
+## ✨ Features
 
-This application consist of two modules
+- **View** all stocks in a clean, sortable table — including soft-deleted entries
+- **Create** new stocks with real-time duplicate name validation
+- **Edit** stock name and price via an inline modal
+- **Soft Delete** — marks a stock as deleted without removing it from the database
+- **Undo Delete** — restore any deleted stock directly from the list with one click
+- **Swagger UI** for interactive API exploration
 
-stock-mvc-api: which handle api management
+---
 
-stock-ui: which handle user interface
+## 🛠 Tech Stack
 
-### Built With
+| Layer    | Technology                                        |
+|----------|---------------------------------------------------|
+| Backend  | Spring Boot 3, Spring Data JPA, H2 (in-memory DB) |
+| Frontend | React 18, Redux, Tailwind CSS, Axios              |
+| Tooling  | Maven, Create React App, Docker Compose           |
 
+---
 
-stock-mvc-api
+## 🚀 Getting Started
 
-* [Springboot](https://spring.io/projects/spring-boot)
+### Prerequisites
 
-* [Lombok](https://projectlombok.org/)
+- Java 17+
+- Node.js 18+
+- Docker *(optional)*
 
-* [h2](https://www.h2database.com/)
+---
 
+### Option 1 — Docker Compose *(recommended)*
 
-stock-ui
-* [React.js](https://reactjs.org/)
-* [Redux.js](https://redux.js.org/)
-
-
-<!-- USAGE EXAMPLES -->
-## Usage stock-mvc-api
-
-# open stock-mvc-api directory
-$ cd stock/stock-mvc-api
-
-# package  with dependencies
-$ mvn clean package
-
-# for docker build
-docker build -t stock  .
-
-# serve with hot reload at localhost
-$ mvn spring-boot run
-
-## Usage stock ui
-# open stock-ui directory
-$ cd stock-ui
-
-# install dependencies
-$ npm i || npm install
-
-# build for production
-$ npm run build
-
-# for docker build
-docker build -t stock-ui:latest .
-
-# serve with hot reload at localhost
-$ npm run dev
-
-# how to run 
-Locate to root of project then (where docker-compose.yml)
-
+```bash
 docker-compose up
+```
 
-# how to access 
-stock-mvc-api
+| Service  | URL                          |
+|----------|------------------------------|
+| Frontend | http://localhost:5000         |
+| Backend  | http://localhost:8080         |
 
-http://localhost:8080
+---
 
-stock-ui
+### Option 2 — Run Locally
 
-http://localhost:5000
+**Backend**
 
+```bash
+cd stock-mvc-api
+./mvnw spring-boot:run
+```
 
-## swagger api documentation
-You can find out API documentation via the following link
-http://localhost:8080/swagger-ui.html
+**Frontend**
 
-<!-- ROADMAP -->
-## Roadmap
+```bash
+cd stock-ui
+npm install
+npm start
+```
 
-- [] Reactive api
+| Service  | URL                          |
+|----------|------------------------------|
+| Frontend | http://localhost:3000         |
+| Backend  | http://localhost:8080         |
+| Swagger  | http://localhost:8080/swagger-ui.html |
 
+---
 
-<!-- CONTACT -->
-## Contact
-bababakshojaee@gmail.com
+## 📡 API Reference
 
+Base URL: `http://localhost:8080/api`
 
+| Method   | Endpoint               | Description                        |
+|----------|------------------------|------------------------------------|
+| `GET`    | `/stocks/`             | List all stocks (including deleted)|
+| `POST`   | `/stocks/`             | Create a stock (unique name)       |
+| `PUT`    | `/stocks/{id}`         | Update name and price              |
+| `DELETE` | `/stocks/{id}`         | Soft delete a stock                |
+| `PATCH`  | `/stocks/{id}/restore` | Restore a soft-deleted stock       |
 
-Project Link: https://github.com/babak-shojaee/stock
+> Deleted stocks remain in the database with `deleted = true` and are excluded from business logic (create/update uniqueness checks) but visible in the list UI.
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+---
 
+## 🗂 Project Structure
 
+```
+stock/
+├── stock-mvc-api/                          # Spring Boot REST API
+│   └── src/main/java/com/babak/stock/
+│       ├── config/                         # CORS config, data seeder
+│       ├── model/                          # Stock JPA entity
+│       ├── repository/                     # Spring Data JPA repository
+│       ├── service/                        # Business logic layer
+│       ├── exception/                      # Custom exceptions
+│       └── web/                            # REST controllers & error advice
+└── stock-ui/                               # React frontend
+    └── src/
+        ├── app/                            # Axios API client
+        ├── components/                     # UI components (Table, Modal, Forms)
+        └── store/                          # Redux store & reducers
+```
 
+---
 
+## 👤 Author
 
-[linkedin-url]: https://linkedin.com/in/babakshojaee
-[product-screenshot]: images/stock-scrrenshot.png
+**Babak Shojaee**
+[LinkedIn](https://www.linkedin.com/in/babak-shojaee) · bababakshojaee@gmail.com · [GitHub](https://github.com/babak-shojaee/stock)
