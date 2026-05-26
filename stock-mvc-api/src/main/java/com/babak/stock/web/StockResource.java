@@ -14,7 +14,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/stocks")
-@CrossOrigin(origins = "${app.cors.allowed-origins}", allowedHeaders = "*")
 public class StockResource {
 
     private static final Logger log = LoggerFactory.getLogger(StockResource.class);

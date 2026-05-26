@@ -1,84 +1,54 @@
 import React from "react";
 
-// Styles
-import "./style.scss";
-
-// Images
-
-import SortIcon from "../../img/sort-icon.png";
-
-const DataTable = props => {
-  return (
-    <div className="table-wrapper">
-      <table className="data-table">
-        <thead>
-          <tr>
-
-            <th
-              onClick={() => {
-                props.onSortChange("name");
-              }}
-            >
-              <span className="column-sort">
-                Name
-                <img src={SortIcon} alt="Name" />
-              </span>
-            </th>
-            <th
-              // onClick={() => {
-              //   props.onSortChange("currentPrice");
-              // }}
-            >
-              <span className="column-sort">
-                Current Price
-                <img src={SortIcon} alt="Current Price" />
-              </span>
-            </th>
-            <th
-              // onClick={() => {
-              //   props.onSortChange("lastUpdate");
-              // }}
-            >
-              <span className="column-none">
-                Last Update
-                <img src={SortIcon} alt="Last Update" />
-              </span>
-            </th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {props.stocks.length ? (
-            props.stocks.map(stock => (
-              <tr key={stock.id}>
-
-                <td>{stock.name}</td>
-                <td>{stock.currentPrice}</td>
-                <td>{stock.lastUpdate}</td>
-                <td className="field-actions">
-                  <button
-                    className="primary-btn"
-                    onClick={() => {
-                      props.updateRow(stock);
-                    }}
-                  >
-                    Update
-                  </button>
-
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="5">
-                <div className="no-record-message">No Record!</div>
+const DataTable = ({ stocks, updateRow, onSortChange }) => (
+  <div className="bg-white rounded-xl shadow overflow-hidden">
+    <table className="min-w-full divide-y divide-gray-200">
+      <thead className="bg-gray-50">
+        <tr>
+          <th
+            className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider cursor-pointer hover:text-indigo-600 select-none"
+            onClick={() => onSortChange("name")}
+          >
+            Name ↕
+          </th>
+          <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+            Current Price
+          </th>
+          <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+            Last Update
+          </th>
+          <th className="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">
+            Actions
+          </th>
+        </tr>
+      </thead>
+      <tbody className="divide-y divide-gray-100">
+        {stocks.length ? (
+          stocks.map(stock => (
+            <tr key={stock.id} className="hover:bg-indigo-50 transition-colors">
+              <td className="px-6 py-4 text-sm font-medium text-gray-800">{stock.name}</td>
+              <td className="px-6 py-4 text-sm text-gray-600">{stock.currentPrice}</td>
+              <td className="px-6 py-4 text-sm text-gray-500">{stock.lastUpdate}</td>
+              <td className="px-6 py-4 text-right">
+                <button
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-3 py-1.5 rounded-lg transition-colors"
+                  onClick={() => updateRow(stock)}
+                >
+                  Edit
+                </button>
               </td>
             </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
-  );
-};
+          ))
+        ) : (
+          <tr>
+            <td colSpan="4" className="px-6 py-12 text-center text-gray-400 text-sm">
+              No stocks found. Create one to get started.
+            </td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+  </div>
+);
 
 export default DataTable;

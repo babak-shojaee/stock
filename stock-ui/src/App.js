@@ -1,17 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  getStocks,
-  getCreatedStock,
-  getUpdatedStock
-} from "./app/api";
+import { getStocks, getCreatedStock, getUpdatedStock } from "./app/api";
 
-// Styles
-import "./app.scss";
-
-// Components
 import Header from "./components/Header";
-import Footer from "./components/Footer";
 import DataTable from "./components/DataTable";
 import CreateStock from "./components/CreateStock";
 import UpdateStock from "./components/UpdateStock";
@@ -19,185 +10,108 @@ import Modal from "./components/Modal";
 import Loader from "./components/Loader";
 import MySwal from "./utils/swal";
 
+const EMPTY_STOCK = { id: null, name: "", currentPrice: "", lastUpdate: "" };
+
 function App() {
   const dispatch = useDispatch();
   const stocks = useSelector(state => state.stocks);
 
   const [loading, setLoading] = useState(false);
-
-  const [currentStock, setCurrentStock] = useState({
-    id: null,
-    name: "",
-    currentPrice: "",
-    lastUpdate: ""
-  });
+  const [currentStock, setCurrentStock] = useState(EMPTY_STOCK);
   const [activeModal, setActiveModal] = useState({ name: "", active: false });
-  const [savedStocks, setSavedStocks] = useState(stocks);
-  const [pageSize] = useState(20);
-  const [currentPage] = useState(1);
   const [sorted, setSorted] = useState(false);
 
-  const stocksLastIndex = currentPage * pageSize;
-  const stocksFirstIndex = stocksLastIndex - pageSize;
-  const currentStocks = stocks.slice(stocksFirstIndex, stocksLastIndex);
-  // const currentStocks = savedStocks;
-
-
-  // Setting up Modal
-  const setModal = modal => {
-
-    setActiveModal({ name: modal, active: true });
-  };
-
-
-
-
-  // Sorting
-  const sorting = key => {
-    setSorted(!sorted);
-    switch (key) {
-      case "name":
-        const nameSort = [...savedStocks].sort((a, b) => {
-          return sorted
-            ? a.name.localeCompare(b.name, "tr")
-            : b.name.localeCompare(a.name, "tr");
-        });
-        dispatch({ type: "SET_STOCKS", data: nameSort });
-        return;
-
-      default:
-        break;
-    }
-  };
-
-  // Create Stock
-  const createStock = async stock => {
-    setActiveModal(false);
-    setLoading(true);
-
-    try {
-      await getCreatedStock(stock).then(res => {
-        const result = res.data;
-        MySwal.fire({
-          icon: "success",
-          title: "Stock created successfully."
-        }).then(() => {
-          dispatch({ type: "CREATE_STOCK", data: result });
-          setSavedStocks([...stocks, result]);
-        });
-      });
-    } catch (err) {
-      MySwal.fire({
-        icon: "error",
-        title: "Failed to create stock."
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Update Stock
-  const updateRow = stock => {
-    setModal("Update Stock");
-
-    setCurrentStock({
-      id: stock.id,
-      name: stock.name,
-      currentPrice: stock.currentPrice,
-      lastUpdate: stock.lastUpdate
-    });
-  };
-
-  const updateStock = async (id, updatedStock) => {
-    setActiveModal(false);
-    setLoading(true);
-
-    try {
-      await getUpdatedStock(id, updatedStock).then(res => {
-        const result = res.data;
-        MySwal.fire({
-          icon: "success",
-          title: "Stock updated successfully."
-        }).then(() => {
-          dispatch({
-            type: "SET_STOCKS",
-            data: stocks.map(stock =>
-              stock.id === id ? Object.assign(stock, result) : stock
-            )
-          });
-        });
-      });
-    } catch (err) {
-      MySwal.fire({
-        icon: "error",
-        title: "Failed to update stock."
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-
-  // Fetch Stocks
   const fetchStocks = async () => {
     setLoading(true);
-
     try {
-      await getStocks().then(({ data }) => {
-        setSavedStocks(data);
-        dispatch({ type: "SET_STOCKS", data: data });
-      });
-    } catch (err) {
-      MySwal.fire({
-        icon: "error",
-        title: "Failed to fetch stocks."
-      });
+      const { data } = await getStocks();
+      dispatch({ type: "SET_STOCKS", data });
+    } catch {
+      MySwal.fire({ icon: "error", title: "Failed to fetch stocks." });
     } finally {
-      setTimeout(() => {
-        setLoading(false);
-      }, 500);
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchStocks();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const openModal = name => setActiveModal({ name, active: true });
+  const closeModal = () => setActiveModal({ name: "", active: false });
+
+  const sorting = key => {
+    const dir = sorted ? 1 : -1;
+    const sorted_stocks = [...stocks].sort((a, b) =>
+      key === "name" ? dir * a.name.localeCompare(b.name, "tr") : 0
+    );
+    setSorted(!sorted);
+    dispatch({ type: "SET_STOCKS", data: sorted_stocks });
+  };
+
+  const createStock = async stock => {
+    closeModal();
+    setLoading(true);
+    try {
+      const { data: result } = await getCreatedStock(stock);
+      await MySwal.fire({ icon: "success", title: "Stock created successfully." });
+      dispatch({ type: "CREATE_STOCK", data: result });
+    } catch {
+      MySwal.fire({ icon: "error", title: "Failed to create stock." });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const openUpdateModal = stock => {
+    setCurrentStock(stock);
+    openModal("Update Stock");
+  };
+
+  const updateStock = async (id, updatedStock) => {
+    closeModal();
+    setLoading(true);
+    try {
+      const { data: result } = await getUpdatedStock(id, updatedStock);
+      await MySwal.fire({ icon: "success", title: "Stock updated successfully." });
+      dispatch({
+        type: "SET_STOCKS",
+        data: stocks.map(s => (s.id === id ? { ...s, ...result } : s))
+      });
+    } catch {
+      MySwal.fire({ icon: "error", title: "Failed to update stock." });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="app">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
-      <main className="content">
-        <div className="container">
+      <main className="flex-1 py-10">
+        <div className="max-w-5xl mx-auto px-4">
           {loading ? (
             <Loader />
           ) : (
-            <div className="content-wrapper">
-              <div className="toolbar">
-                {/*<Search search={search} resetSearch={search} />*/}
+            <>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-semibold text-gray-700">Stock List</h2>
                 <button
-                  className="primary-btn"
-                  onClick={() => setModal("Create Stock")}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-lg transition-colors"
+                  onClick={() => openModal("Create Stock")}
                 >
-                  Create New Stock
+                  + New Stock
                 </button>
               </div>
-              <DataTable
-                stocks={currentStocks}
-                updateRow={updateRow}
-                onSortChange={sorting}
-              />
-
-            </div>
+              <DataTable stocks={stocks} updateRow={openUpdateModal} onSortChange={sorting} />
+            </>
           )}
         </div>
       </main>
       {activeModal.active && (
-        <Modal activeModal={activeModal}>
+        <Modal activeModal={activeModal} onClose={closeModal}>
           {activeModal.name === "Create Stock" && (
-            <CreateStock
-              createStock={createStock}
-              setActiveModal={setActiveModal}
-            />
+            <CreateStock createStock={createStock} setActiveModal={setActiveModal} />
           )}
           {activeModal.name === "Update Stock" && (
             <UpdateStock
@@ -206,10 +120,8 @@ function App() {
               setActiveModal={setActiveModal}
             />
           )}
-
         </Modal>
       )}
-      <Footer />
     </div>
   );
 }
