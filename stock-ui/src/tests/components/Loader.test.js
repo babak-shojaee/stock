@@ -1,9 +1,13 @@
-import React from 'react'
-import { render } from '@testing-library/react'
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import Loader from '../../components/Loader';
 
-import Loader from '../../components/Loader/index'
+test('renders a spinner element', () => {
+  const { container } = render(<Loader />);
+  expect(container.querySelector('.animate-spin')).toBeInTheDocument();
+});
 
-test('Should render Loader correctly', () => {
-  const { asFragment } = render(<Loader />)
-  expect(asFragment()).toMatchSnapshot()
-})
+test('matches snapshot', () => {
+  const { asFragment } = render(<Loader />);
+  expect(asFragment()).toMatchSnapshot();
+});

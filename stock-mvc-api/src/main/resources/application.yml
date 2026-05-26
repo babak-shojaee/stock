@@ -12,6 +12,10 @@ spring:
     init:
       mode: always
 
+  graphql:
+    graphiql:
+      enabled: true
+
 app:
   cors:
     allowed-origins: "http://localhost:3000,http://localhost:5000"

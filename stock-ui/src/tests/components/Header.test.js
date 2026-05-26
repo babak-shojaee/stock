@@ -1,9 +1,13 @@
-import React from 'react'
-import { render } from '@testing-library/react'
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import Header from '../../components/Header';
 
-import Header from '../../components/Header/index'
+test('renders the Stocks link', () => {
+  render(<Header />);
+  expect(screen.getByRole('link', { name: /stocks/i })).toHaveAttribute('href', '/');
+});
 
-test('Should render Header correctly', () => {
-  const { asFragment } = render(<Header />)
-  expect(asFragment()).toMatchSnapshot()
-})
+test('matches snapshot', () => {
+  const { asFragment } = render(<Header />);
+  expect(asFragment()).toMatchSnapshot();
+});

@@ -1,0 +1,19 @@
+type Stock {
+    id: ID!
+    name: String!
+    currentPrice: Float
+    lastUpdate: String
+    deleted: Boolean!
+}
+
+type Query {
+    stocks: [Stock!]!
+    stock(id: ID!): Stock
+}
+
+type Mutation {
+    createStock(name: String!, currentPrice: Float!): Stock!
+    updateStock(id: ID!, name: String!, currentPrice: Float!): Stock!
+    deleteStock(id: ID!): Boolean!
+    restoreStock(id: ID!): Boolean!
+}

@@ -70,7 +70,7 @@ public class StockResourceTest {
 
     @Test
     public void findAll() throws Exception {
-        Mockito.when(service.findAll()).thenReturn(List.of(
+        Mockito.when(service.findAllIncludingDeleted()).thenReturn(List.of(
                 Stock.builder().id(1L).name(FACEBOOK).currentPrice(FACEBOOK_PRICE).build(),
                 Stock.builder().id(2L).name(GOOGLE).currentPrice(GOOGLE_PRICE).build()));
 

@@ -1,18 +1,20 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Should render Header correctly 1`] = `
-<header
-  className="header"
->
-  <div
-    className="container"
+exports[`matches snapshot 1`] = `
+<DocumentFragment>
+  <header
+    class="bg-indigo-700 shadow-md"
   >
-    <a
-      className="logo"
-      href="/"
+    <div
+      class="max-w-5xl mx-auto px-4 py-4 flex items-center"
     >
-      Stocks
-    </a>
-  </div>
-</header>
+      <a
+        class="text-white text-2xl font-bold tracking-wide hover:text-indigo-200 transition-colors"
+        href="/"
+      >
+        📈 Stocks
+      </a>
+    </div>
+  </header>
+</DocumentFragment>
 `;
