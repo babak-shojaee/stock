@@ -2,6 +2,7 @@ package com.babak.stock.model;
 
 import org.hibernate.annotations.UpdateTimestamp;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -20,6 +21,7 @@ public class Stock {
 
     @NotNull
     @NotEmpty
+    @Column(unique = true)
     private String name;
 
     @DecimalMin(value = "0.1", inclusive = false)

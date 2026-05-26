@@ -39,6 +39,8 @@ public class StockServiceImpl implements StockService {
     public Stock updateStock(Long stockId, Stock stock) throws StockNotFoundException {
         Stock oldStock = stockRepository.findById(stockId)
                 .orElseThrow(() -> new StockNotFoundException(STOCK_ENTITY + " not found with id: " + stockId));
+        if (stockRepository.existsByNameIgnoreCaseAndIdNot(stock.getName(), stockId))
+            throw new IllegalArgumentException("Stock name '" + stock.getName() + "' already exists");
         oldStock.setName(stock.getName());
         oldStock.setCurrentPrice(stock.getCurrentPrice());
         return stockRepository.save(oldStock);
@@ -47,6 +49,8 @@ public class StockServiceImpl implements StockService {
     @Override
     @Transactional
     public Stock createStock(Stock stock) {
+        if (stockRepository.existsByNameIgnoreCase(stock.getName()))
+            throw new IllegalArgumentException("Stock name '" + stock.getName() + "' already exists");
         return stockRepository.save(stock);
     }
 }

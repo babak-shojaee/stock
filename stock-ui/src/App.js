@@ -50,16 +50,14 @@ function App() {
   };
 
   const createStock = async stock => {
-    closeModal();
-    setLoading(true);
     try {
       const { data: result } = await getCreatedStock(stock);
+      closeModal();
       await MySwal.fire({ icon: "success", title: "Stock created successfully." });
       dispatch({ type: "CREATE_STOCK", data: result });
-    } catch {
-      MySwal.fire({ icon: "error", title: "Failed to create stock." });
-    } finally {
-      setLoading(false);
+    } catch (err) {
+      const msg = err?.response?.data?.message || "Failed to create stock.";
+      throw new Error(msg);
     }
   };
 
@@ -69,19 +67,17 @@ function App() {
   };
 
   const updateStock = async (id, updatedStock) => {
-    closeModal();
-    setLoading(true);
     try {
       const { data: result } = await getUpdatedStock(id, updatedStock);
+      closeModal();
       await MySwal.fire({ icon: "success", title: "Stock updated successfully." });
       dispatch({
         type: "SET_STOCKS",
         data: stocks.map(s => (s.id === id ? { ...s, ...result } : s))
       });
-    } catch {
-      MySwal.fire({ icon: "error", title: "Failed to update stock." });
-    } finally {
-      setLoading(false);
+    } catch (err) {
+      const msg = err?.response?.data?.message || "Failed to update stock.";
+      throw new Error(msg);
     }
   };
 
