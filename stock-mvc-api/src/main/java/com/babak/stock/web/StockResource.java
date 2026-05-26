@@ -6,7 +6,6 @@ import com.babak.stock.service.StockService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +25,7 @@ public class StockResource {
 
     @GetMapping({"", "/"})
     public ResponseEntity<List<Stock>> findAll() {
-        return ResponseEntity.ok(stockService.findAll());
+        return ResponseEntity.ok(stockService.findAllIncludingDeleted());
     }
 
     @GetMapping("/{id}")
@@ -43,6 +42,15 @@ public class StockResource {
         return ResponseEntity.ok(updated);
     }
 
+    @PostMapping({"", "/"})
+    public ResponseEntity<Stock> createStock(@Valid @RequestBody Stock stock) {
+        Stock result = stockService.createStock(stock);
+        log.info("Stock created with id: {}", result.getId());
+        var location = org.springframework.web.servlet.support.ServletUriComponentsBuilder
+                .fromCurrentRequest().path("/{id}").buildAndExpand(result.getId()).toUri();
+        return ResponseEntity.created(location).body(result);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStock(@PathVariable Long id) throws StockNotFoundException {
         stockService.deleteStock(id);
@@ -55,12 +63,5 @@ public class StockResource {
         stockService.restoreStock(id);
         log.info("Stock restored with id: {}", id);
         return ResponseEntity.noContent().build();
-    }
-    public ResponseEntity<Stock> createStock(@Valid @RequestBody Stock stock) {
-        Stock result = stockService.createStock(stock);
-        log.info("Stock created with id: {}", result.getId());
-        var location = org.springframework.web.servlet.support.ServletUriComponentsBuilder
-                .fromCurrentRequest().path("/{id}").buildAndExpand(result.getId()).toUri();
-        return ResponseEntity.created(location).body(result);
     }
 }

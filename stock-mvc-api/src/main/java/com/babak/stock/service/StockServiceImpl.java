@@ -29,6 +29,11 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
+    public List<Stock> findAllIncludingDeleted() {
+        return stockRepository.findAll();
+    }
+
+    @Override
     public Stock findById(Long id) throws StockNotFoundException {
         return stockRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new StockNotFoundException(STOCK_ENTITY + " not found with id: " + id));

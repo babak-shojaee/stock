@@ -1,6 +1,6 @@
 import React from "react";
 
-const DataTable = ({ stocks, updateRow, deleteRow, onSortChange }) => (
+const DataTable = ({ stocks, updateRow, deleteRow, undoRow, onSortChange }) => (
   <div className="bg-white rounded-xl shadow overflow-hidden">
     <table className="min-w-full divide-y divide-gray-200">
       <thead className="bg-gray-50">
@@ -25,23 +25,40 @@ const DataTable = ({ stocks, updateRow, deleteRow, onSortChange }) => (
       <tbody className="divide-y divide-gray-100">
         {stocks.length ? (
           stocks.map(stock => (
-            <tr key={stock.id} className="hover:bg-indigo-50 transition-colors">
-              <td className="px-6 py-4 text-sm font-medium text-gray-800">{stock.name}</td>
-              <td className="px-6 py-4 text-sm text-gray-600">{stock.currentPrice}</td>
-              <td className="px-6 py-4 text-sm text-gray-500">{stock.lastUpdate}</td>
+            <tr key={stock.id} className={stock.deleted ? "bg-red-50" : "hover:bg-indigo-50 transition-colors"}>
+              <td className={`px-6 py-4 text-sm font-medium ${stock.deleted ? "line-through text-gray-400" : "text-gray-800"}`}>
+                {stock.name}
+              </td>
+              <td className={`px-6 py-4 text-sm ${stock.deleted ? "line-through text-gray-400" : "text-gray-600"}`}>
+                {stock.currentPrice}
+              </td>
+              <td className={`px-6 py-4 text-sm ${stock.deleted ? "text-gray-300" : "text-gray-500"}`}>
+                {stock.lastUpdate}
+              </td>
               <td className="px-6 py-4 text-right">
-                <button
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-3 py-1.5 rounded-lg transition-colors mr-2"
-                  onClick={() => updateRow(stock)}
-                >
-                  Edit
-                </button>
-                <button
-                  className="bg-red-600 hover:bg-red-700 text-white text-sm font-medium px-3 py-1.5 rounded-lg transition-colors"
-                  onClick={() => deleteRow(stock.id)}
-                >
-                  Delete
-                </button>
+                {stock.deleted ? (
+                  <button
+                    className="bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-3 py-1.5 rounded-lg transition-colors"
+                    onClick={() => undoRow(stock.id)}
+                  >
+                    Undo
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-3 py-1.5 rounded-lg transition-colors mr-2"
+                      onClick={() => updateRow(stock)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="bg-red-600 hover:bg-red-700 text-white text-sm font-medium px-3 py-1.5 rounded-lg transition-colors"
+                      onClick={() => deleteRow(stock.id)}
+                    >
+                      Delete
+                    </button>
+                  </>
+                )}
               </td>
             </tr>
           ))
