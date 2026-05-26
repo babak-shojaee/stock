@@ -25,21 +25,21 @@ public class StockServiceImpl implements StockService {
 
     @Override
     public List<Stock> findAll() {
-        return stockRepository.findAll();
+        return stockRepository.findAllByDeletedFalse();
     }
 
     @Override
     public Stock findById(Long id) throws StockNotFoundException {
-        return stockRepository.findById(id)
+        return stockRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new StockNotFoundException(STOCK_ENTITY + " not found with id: " + id));
     }
 
     @Override
     @Transactional
     public Stock updateStock(Long stockId, Stock stock) throws StockNotFoundException {
-        Stock oldStock = stockRepository.findById(stockId)
+        Stock oldStock = stockRepository.findByIdAndDeletedFalse(stockId)
                 .orElseThrow(() -> new StockNotFoundException(STOCK_ENTITY + " not found with id: " + stockId));
-        if (stockRepository.existsByNameIgnoreCaseAndIdNot(stock.getName(), stockId))
+        if (stockRepository.existsByNameIgnoreCaseAndIdNotAndDeletedFalse(stock.getName(), stockId))
             throw new IllegalArgumentException("Stock name '" + stock.getName() + "' already exists");
         oldStock.setName(stock.getName());
         oldStock.setCurrentPrice(stock.getCurrentPrice());
@@ -49,8 +49,17 @@ public class StockServiceImpl implements StockService {
     @Override
     @Transactional
     public Stock createStock(Stock stock) {
-        if (stockRepository.existsByNameIgnoreCase(stock.getName()))
+        if (stockRepository.existsByNameIgnoreCaseAndDeletedFalse(stock.getName()))
             throw new IllegalArgumentException("Stock name '" + stock.getName() + "' already exists");
         return stockRepository.save(stock);
+    }
+
+    @Override
+    @Transactional
+    public void deleteStock(Long id) throws StockNotFoundException {
+        Stock stock = stockRepository.findByIdAndDeletedFalse(id)
+                .orElseThrow(() -> new StockNotFoundException(STOCK_ENTITY + " not found with id: " + id));
+        stock.setDeleted(true);
+        stockRepository.save(stock);
     }
 }

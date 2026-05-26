@@ -14,7 +14,7 @@ public interface StockService {
 
     Stock findById(Long id)throws StockNotFoundException;
 
-    Stock updateStock(Long stockId, Stock stock)throws StockNotFoundException;
+    Stock updateStock(Long stockId, Stock stock) throws StockNotFoundException;
 
-
+    void deleteStock(Long id) throws StockNotFoundException;
 }

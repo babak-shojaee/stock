@@ -30,6 +30,9 @@ public class Stock {
     @UpdateTimestamp
     private Instant lastUpdate;
 
+    @Column(nullable = false)
+    private boolean deleted = false;
+
     public Stock() {}
 
     public Stock(Long id, String name, Double currentPrice, Instant lastUpdate) {
@@ -47,6 +50,8 @@ public class Stock {
     public void setCurrentPrice(Double currentPrice) { this.currentPrice = currentPrice; }
     public Instant getLastUpdate() { return lastUpdate; }
     public void setLastUpdate(Instant lastUpdate) { this.lastUpdate = lastUpdate; }
+    public boolean isDeleted() { return deleted; }
+    public void setDeleted(boolean deleted) { this.deleted = deleted; }
 
     @Override
     public String toString() {

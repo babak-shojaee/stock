@@ -9,3 +9,6 @@ export const getCreatedStock = ({ name, currentPrice, lastUpdate }) =>
 
 export const getUpdatedStock = (id, { name, currentPrice }) =>
   axios.put(`${apiURL}/stocks/${id}`, { id, name, currentPrice });
+
+export const deleteStock = (id) =>
+  axios.delete(`${apiURL}/stocks/${id}`);

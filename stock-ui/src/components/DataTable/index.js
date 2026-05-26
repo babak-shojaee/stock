@@ -1,6 +1,6 @@
 import React from "react";
 
-const DataTable = ({ stocks, updateRow, onSortChange }) => (
+const DataTable = ({ stocks, updateRow, deleteRow, onSortChange }) => (
   <div className="bg-white rounded-xl shadow overflow-hidden">
     <table className="min-w-full divide-y divide-gray-200">
       <thead className="bg-gray-50">
@@ -31,10 +31,16 @@ const DataTable = ({ stocks, updateRow, onSortChange }) => (
               <td className="px-6 py-4 text-sm text-gray-500">{stock.lastUpdate}</td>
               <td className="px-6 py-4 text-right">
                 <button
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-3 py-1.5 rounded-lg transition-colors"
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-3 py-1.5 rounded-lg transition-colors mr-2"
                   onClick={() => updateRow(stock)}
                 >
                   Edit
+                </button>
+                <button
+                  className="bg-red-600 hover:bg-red-700 text-white text-sm font-medium px-3 py-1.5 rounded-lg transition-colors"
+                  onClick={() => deleteRow(stock.id)}
+                >
+                  Delete
                 </button>
               </td>
             </tr>

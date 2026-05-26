@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { getStocks, getCreatedStock, getUpdatedStock } from "./app/api";
+import { getStocks, getCreatedStock, getUpdatedStock, deleteStock } from "./app/api";
 
 import Header from "./components/Header";
 import DataTable from "./components/DataTable";
@@ -66,6 +66,27 @@ function App() {
     openModal("Update Stock");
   };
 
+  const handleDelete = async id => {
+    const result = await MySwal.fire({
+      title: "Delete stock?",
+      text: "This will mark the stock as deleted.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Delete",
+      confirmButtonColor: "#dc2626",
+    });
+    if (!result.isConfirmed) return;
+    setLoading(true);
+    try {
+      await deleteStock(id);
+      dispatch({ type: "SET_STOCKS", data: stocks.filter(s => s.id !== id) });
+    } catch {
+      MySwal.fire({ icon: "error", title: "Failed to delete stock." });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const updateStock = async (id, updatedStock) => {
     try {
       const { data: result } = await getUpdatedStock(id, updatedStock);
@@ -99,7 +120,7 @@ function App() {
                   + New Stock
                 </button>
               </div>
-              <DataTable stocks={stocks} updateRow={openUpdateModal} onSortChange={sorting} />
+              <DataTable stocks={stocks} updateRow={openUpdateModal} deleteRow={handleDelete} onSortChange={sorting} />
             </>
           )}
         </div>

@@ -43,7 +43,12 @@ public class StockResource {
         return ResponseEntity.ok(updated);
     }
 
-    @PostMapping({"", "/"})
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteStock(@PathVariable Long id) throws StockNotFoundException {
+        stockService.deleteStock(id);
+        log.info("Stock soft-deleted with id: {}", id);
+        return ResponseEntity.noContent().build();
+    }
     public ResponseEntity<Stock> createStock(@Valid @RequestBody Stock stock) {
         Stock result = stockService.createStock(stock);
         log.info("Stock created with id: {}", result.getId());
