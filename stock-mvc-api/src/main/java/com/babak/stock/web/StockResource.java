@@ -49,6 +49,13 @@ public class StockResource {
         log.info("Stock soft-deleted with id: {}", id);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{id}/restore")
+    public ResponseEntity<Void> restoreStock(@PathVariable Long id) throws StockNotFoundException {
+        stockService.restoreStock(id);
+        log.info("Stock restored with id: {}", id);
+        return ResponseEntity.noContent().build();
+    }
     public ResponseEntity<Stock> createStock(@Valid @RequestBody Stock stock) {
         Stock result = stockService.createStock(stock);
         log.info("Stock created with id: {}", result.getId());

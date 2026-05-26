@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { getStocks, getCreatedStock, getUpdatedStock, deleteStock } from "./app/api";
+import { getStocks, getCreatedStock, getUpdatedStock, deleteStock, restoreStock } from "./app/api";
 
 import Header from "./components/Header";
 import DataTable from "./components/DataTable";
@@ -8,6 +8,7 @@ import CreateStock from "./components/CreateStock";
 import UpdateStock from "./components/UpdateStock";
 import Modal from "./components/Modal";
 import Loader from "./components/Loader";
+import UndoToast from "./components/UndoToast";
 import MySwal from "./utils/swal";
 
 const EMPTY_STOCK = { id: null, name: "", currentPrice: "", lastUpdate: "" };
@@ -20,6 +21,7 @@ function App() {
   const [currentStock, setCurrentStock] = useState(EMPTY_STOCK);
   const [activeModal, setActiveModal] = useState({ name: "", active: false });
   const [sorted, setSorted] = useState(false);
+  const [undoToast, setUndoToast] = useState(null);
 
   const fetchStocks = async () => {
     setLoading(true);
@@ -67,23 +69,29 @@ function App() {
   };
 
   const handleDelete = async id => {
-    const result = await MySwal.fire({
-      title: "Delete stock?",
-      text: "This will mark the stock as deleted.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Delete",
-      confirmButtonColor: "#dc2626",
-    });
-    if (!result.isConfirmed) return;
-    setLoading(true);
+    const stock = stocks.find(s => s.id === id);
     try {
       await deleteStock(id);
       dispatch({ type: "SET_STOCKS", data: stocks.filter(s => s.id !== id) });
+      setUndoToast({
+        id,
+        stock,
+        message: `"${stock.name}" deleted.`,
+      });
     } catch {
       MySwal.fire({ icon: "error", title: "Failed to delete stock." });
-    } finally {
-      setLoading(false);
+    }
+  };
+
+  const handleUndo = async () => {
+    if (!undoToast) return;
+    const { id, stock } = undoToast;
+    setUndoToast(null);
+    try {
+      await restoreStock(id);
+      dispatch({ type: "CREATE_STOCK", data: stock });
+    } catch {
+      MySwal.fire({ icon: "error", title: "Failed to undo delete." });
     }
   };
 
@@ -138,6 +146,13 @@ function App() {
             />
           )}
         </Modal>
+      )}
+      {undoToast && (
+        <UndoToast
+          message={undoToast.message}
+          onUndo={handleUndo}
+          onDismiss={() => setUndoToast(null)}
+        />
       )}
     </div>
   );

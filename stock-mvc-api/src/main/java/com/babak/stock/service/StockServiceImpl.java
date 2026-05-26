@@ -62,4 +62,14 @@ public class StockServiceImpl implements StockService {
         stock.setDeleted(true);
         stockRepository.save(stock);
     }
+
+    @Override
+    @Transactional
+    public void restoreStock(Long id) throws StockNotFoundException {
+        Stock stock = stockRepository.findById(id)
+                .filter(Stock::isDeleted)
+                .orElseThrow(() -> new StockNotFoundException(STOCK_ENTITY + " not found with id: " + id));
+        stock.setDeleted(false);
+        stockRepository.save(stock);
+    }
 }

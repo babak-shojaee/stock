@@ -12,3 +12,6 @@ export const getUpdatedStock = (id, { name, currentPrice }) =>
 
 export const deleteStock = (id) =>
   axios.delete(`${apiURL}/stocks/${id}`);
+
+export const restoreStock = (id) =>
+  axios.patch(`${apiURL}/stocks/${id}/restore`);
